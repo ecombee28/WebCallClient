@@ -40,7 +40,6 @@ public class ActorDetails {
     public Mono<ActorResponse> gatherActorDetails(ActorRequest request) {
 
         String name =request.getFirstName() + " " + request.getLastName();
-        System.out.println(name);
 
         return webClient.get().
                 uri(uriBuilder -> uriBuilder

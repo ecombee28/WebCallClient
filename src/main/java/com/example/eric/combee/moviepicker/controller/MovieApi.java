@@ -22,6 +22,4 @@ public interface MovieApi {
     @GetMapping(value = "v1/movie/actor-details", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<?> getActorDetails(@Valid @RequestBody ActorRequest request) throws JsonProcessingException;
 
-    @GetMapping(value = "v1/movie/search", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<?> searchForMovie(@RequestHeader String date, @Valid @RequestBody MovieSearch body);
 }

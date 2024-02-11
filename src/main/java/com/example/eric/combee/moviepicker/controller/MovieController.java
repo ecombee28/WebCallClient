@@ -38,9 +38,4 @@ public class MovieController implements MovieApi {
         return new ResponseEntity<>(actorDetails.gatherActorDetails(request).block(), HttpStatus.OK);
     }
 
-
-    @Override
-    public ResponseEntity<?> searchForMovie(String date, MovieSearch body) {
-        return null;
-    }
 }
