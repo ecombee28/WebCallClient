@@ -42,7 +42,7 @@ public class MovieDetails {
     public Mono<MovieDetailModel> gatherMovieDetails(String movieId) {
 
         return webClient.get().
-                uri(uriBuilder -> uriBuilder.path("movie/" + movieId + "?language=en-US").build())
+                uri(uriBuilder -> uriBuilder.path("movie/{id}?language=en-US").build(movieId))
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
                 .retrieve()
@@ -76,8 +76,11 @@ public class MovieDetails {
         response.setBackgroundPath(backgroundPath + response.getBackgroundPath());
         response.setPosterPath(posterPath + response.getPosterPath());
         response.setBudget(setBudget(Double.parseDouble(response.getBudget())));
-        response.getCollectionsList().setPosterPath(posterPath + response.getCollectionsList().getPosterPath());
-        response.getCollectionsList().setBackdropPath(backgroundPath + response.getCollectionsList().getBackdropPath());
+
+        if(response.getCollectionsList()!=null) {
+            response.getCollectionsList().setPosterPath(posterPath + response.getCollectionsList().getPosterPath());
+            response.getCollectionsList().setBackdropPath(backgroundPath + response.getCollectionsList().getBackdropPath());
+        }
 
         return response;
 

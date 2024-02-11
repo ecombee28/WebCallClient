@@ -39,10 +39,17 @@ public class ActorDetails {
 
     public Mono<ActorResponse> gatherActorDetails(ActorRequest request) {
 
-        String name = (request.getFirstName() + " " + request.getLastName()).toLowerCase();
+        String name =request.getFirstName() + " " + request.getLastName();
+        System.out.println(name);
 
         return webClient.get().
-                uri(uriBuilder -> uriBuilder.path("search/person?query=" + name + "&include_adult=false&language=en-US&page=1").build())
+                uri(uriBuilder -> uriBuilder
+                        .path("search/person")
+                        .queryParam("query",name)
+                        .queryParam("include_adult",false)
+                        .queryParam("language","en-US")
+                        .queryParam("page",1)
+                        .build())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
                 .retrieve()
@@ -80,6 +87,8 @@ public class ActorDetails {
         actorResponse.setImage(posterPath + response.getImage());
         actorResponse.setKnownForDepartment(response.knownForDepartment);
         actorResponse.setMovieRoles(response.getMovieRolesList());
+
+        System.out.println(response.getName());
 
         return actorResponse;
 
