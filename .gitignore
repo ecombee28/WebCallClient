@@ -26,7 +26,3 @@ test-output/
 /nbdist/
 /.nb-gradle/
 build/
-
-### VS Code ###
-.vscode/
-src/main/resources/application-test.properties
