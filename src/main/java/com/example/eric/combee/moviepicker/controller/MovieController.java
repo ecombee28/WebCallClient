@@ -1,9 +1,11 @@
 package com.example.eric.combee.moviepicker.controller;
 
 import com.example.eric.combee.moviepicker.model.request.ActorRequest;
-import com.example.eric.combee.moviepicker.model.request.MovieSearch;
+import com.example.eric.combee.moviepicker.model.request.MovieSearchRequest;
+import com.example.eric.combee.moviepicker.model.response.MovieRequest;
 import com.example.eric.combee.moviepicker.services.ActorDetails;
 import com.example.eric.combee.moviepicker.services.MovieDetails;
+import com.example.eric.combee.moviepicker.services.MovieSearch;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,20 +24,29 @@ public class MovieController implements MovieApi {
 
     @Autowired
     private LoggingUtility loggingUtility;
+    @Autowired
+    private MovieSearch movieSearch;
 
 
     @Override
     public ResponseEntity<?> getMovieDetails(String movieId) throws JsonProcessingException {
         loggingUtility.logInfo(null, "Entered into the controller with movieId: " + movieId);
 
-        return new ResponseEntity<>(movieDetails.gatherMovieDetails(movieId).block(), HttpStatus.OK);
+        return new ResponseEntity<>(movieDetails.gatherMovieDetails(movieId), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<?> getActorDetails(ActorRequest request) throws JsonProcessingException {
-        String name = request.getFirstName() + " " + request.getLastName();
+        String name = request.getFirstName()+" "+request.getLastName();
         loggingUtility.logInfo(null, "Entered into the controller for actor: " + name);
-        return new ResponseEntity<>(actorDetails.gatherActorDetails(request).block(), HttpStatus.OK);
+        return new ResponseEntity<>(actorDetails.gatherActorDetails(request), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> searchForMovie(MovieSearchRequest body) {
+
+        System.out.println(movieSearch.searchForMovie(body));
+        return new ResponseEntity<>(movieSearch.searchForMovie(body),HttpStatus.OK);
     }
 
 }

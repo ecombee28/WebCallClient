@@ -17,6 +17,8 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class ActorDetails {
@@ -37,7 +39,7 @@ public class ActorDetails {
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
 
-    public Mono<ActorResponse> gatherActorDetails(ActorRequest request) {
+    public ActorResponse gatherActorDetails(ActorRequest request) {
 
         String name =request.getFirstName() + " " + request.getLastName();
 
@@ -45,9 +47,6 @@ public class ActorDetails {
                 uri(uriBuilder -> uriBuilder
                         .path("search/person")
                         .queryParam("query",name)
-                        .queryParam("include_adult",false)
-                        .queryParam("language","en-US")
-                        .queryParam("page",1)
                         .build())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
@@ -68,14 +67,14 @@ public class ActorDetails {
                 .onErrorResume(error -> {
                     loggingUtility.logWebClientError("There was an error calling TMDB for actor details", error);
                     return Mono.error(error);
-                });
+                })
+                .block();
 
 
     }
 
 
     private ActorResponse prepareResponse(ActorDetailModel response) {
-
         ActorResponse actorResponse = new ActorResponse();
         int gender = response.getGender();
 
@@ -86,8 +85,6 @@ public class ActorDetails {
         actorResponse.setImage(posterPath + response.getImage());
         actorResponse.setKnownForDepartment(response.knownForDepartment);
         actorResponse.setMovieRoles(response.getMovieRolesList());
-
-        System.out.println(response.getName());
 
         return actorResponse;
 

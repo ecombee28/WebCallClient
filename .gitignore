@@ -2,6 +2,7 @@
 /.project
 /bin/
 .gradle/
+.build/
 test-output/
 src/main/resources/application.properties
 
