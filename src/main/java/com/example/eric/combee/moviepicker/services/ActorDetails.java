@@ -1,8 +1,9 @@
 package com.example.eric.combee.moviepicker.services;
 
+import com.example.eric.combee.moviepicker.model.MovieRoles;
 import com.example.eric.combee.moviepicker.model.request.ActorRequest;
-import com.example.eric.combee.moviepicker.model.response.ActorDetailModel;
 import com.example.eric.combee.moviepicker.model.response.ActorResponse;
+import com.example.eric.combee.moviepicker.model.response.ActorSearchWebResponse;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,8 +18,8 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ActorDetails {
@@ -41,12 +42,12 @@ public class ActorDetails {
 
     public ActorResponse gatherActorDetails(ActorRequest request) {
 
-        String name =request.getFirstName() + " " + request.getLastName();
+        String name = request.getFirstName() + " " + request.getLastName();
 
         return webClient.get().
                 uri(uriBuilder -> uriBuilder
                         .path("search/person")
-                        .queryParam("query",name)
+                        .queryParam("query", name)
                         .build())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
@@ -54,7 +55,7 @@ public class ActorDetails {
                 .onStatus(
                         HttpStatusCode::is4xxClientError,
                         response -> Mono.error(new RuntimeException("client error: " + response.statusCode().value() + " Not Found")))
-                .bodyToMono(ActorDetailModel.class)
+                .bodyToMono(ActorSearchWebResponse.class)
                 .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(retryWaitTime))
                         .filter(throwable -> {
                             if (throwable instanceof WebClientResponseException) {
@@ -74,17 +75,28 @@ public class ActorDetails {
     }
 
 
-    private ActorResponse prepareResponse(ActorDetailModel response) {
+    private ActorResponse prepareResponse(ActorSearchWebResponse response) {
         ActorResponse actorResponse = new ActorResponse();
-        int gender = response.getGender();
+        String gender = response.getResults().get(0).getGender() == 1 ? "Female" : "Male";
+        String profilePicture = posterPath + response.getResults().get(0).getImage();
 
-        actorResponse.setId(response.getId());
-        actorResponse.setName(response.getName());
-        actorResponse.setOriginalName(response.getOriginalName());
-        actorResponse.setGender(gender == 1 ? "Female" : "Male");
-        actorResponse.setImage(posterPath + response.getImage());
-        actorResponse.setKnownForDepartment(response.knownForDepartment);
-        actorResponse.setMovieRoles(response.getMovieRolesList());
+        actorResponse.setOriginalName(response.getResults().get(0).getOriginalName());
+        actorResponse.setId(response.getResults().get(0).getId());
+        actorResponse.setName(response.getResults().get(0).getName());
+        actorResponse.setImage(profilePicture);
+        actorResponse.setKnownForDepartment(response.getResults().get(0).getKnownForDepartment());
+        actorResponse.setGender(gender);
+      
+        List<MovieRoles> movieList = response.getResults().get(0).movieRolesList.stream().map(movie -> {
+                    MovieRoles movieRoles = new MovieRoles();
+                    movieRoles.setPosterPath(posterPath + movie.getPosterPath());
+                    movieRoles.setMediaType(movie.getMediaType());
+                    movieRoles.setTitle(movie.getTitle());
+                    return movieRoles;
+                })
+                .collect(Collectors.toList());
+
+        actorResponse.setMovieRoles(movieList);
 
         return actorResponse;
 

@@ -11,8 +11,8 @@ import lombok.NonNull;
 public class MovieSearchRequest {
 
     @NonNull
-    public String movieName;
-    public String releaseDate;
-    public int numberOfResults;
+    public String movieName = "";
+    public String releaseYear = "";
+    public int numberOfResults = 0;
 
 }

@@ -2,7 +2,6 @@ package com.example.eric.combee.moviepicker.controller;
 
 import com.example.eric.combee.moviepicker.model.request.ActorRequest;
 import com.example.eric.combee.moviepicker.model.request.MovieSearchRequest;
-import com.example.eric.combee.moviepicker.model.response.MovieRequest;
 import com.example.eric.combee.moviepicker.services.ActorDetails;
 import com.example.eric.combee.moviepicker.services.MovieDetails;
 import com.example.eric.combee.moviepicker.services.MovieSearch;
@@ -37,16 +36,15 @@ public class MovieController implements MovieApi {
 
     @Override
     public ResponseEntity<?> getActorDetails(ActorRequest request) throws JsonProcessingException {
-        String name = request.getFirstName()+" "+request.getLastName();
+        String name = request.getFirstName() + " " + request.getLastName();
         loggingUtility.logInfo(null, "Entered into the controller for actor: " + name);
         return new ResponseEntity<>(actorDetails.gatherActorDetails(request), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> searchForMovie(MovieSearchRequest body) {
-
-        System.out.println(movieSearch.searchForMovie(body));
-        return new ResponseEntity<>(movieSearch.searchForMovie(body),HttpStatus.OK);
+    public ResponseEntity<?> searchForMovie(MovieSearchRequest body) throws JsonProcessingException {
+        loggingUtility.logInfo(null, "Entered into the controller for movie: " + body.getMovieName());
+        return new ResponseEntity<>(movieSearch.searchForMovie(body), HttpStatus.OK);
     }
 
 }

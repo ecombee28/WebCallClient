@@ -8,16 +8,15 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class MovieRequest {
+@AllArgsConstructor
+public class ActorSearchWebResponse {
 
     public int page;
     @JsonProperty("results")
-    public List<MovieSearchModel> results;
+    public List<ActorDetailModel> results;
     @JsonProperty("total_pages")
     public int totalPages;
     @JsonProperty("total_results")
     public int totalResults;
-
 }

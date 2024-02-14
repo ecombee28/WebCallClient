@@ -8,13 +8,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MovieDetailModel {
+public class MovieSearchModel {
 
     @JsonProperty("backdrop_path")
     public String backgroundPath;
-    @JsonProperty("belongs_to_collection")
-    public Collections collectionsList;
-    public String budget;
     public int id;
     @JsonProperty("imdb_id")
     public String imdbId;
@@ -29,5 +26,4 @@ public class MovieDetailModel {
     public String title;
     @JsonProperty("vote_count")
     public int voteCount;
-
 }

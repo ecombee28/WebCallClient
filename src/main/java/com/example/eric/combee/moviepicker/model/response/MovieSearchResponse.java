@@ -10,14 +10,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MovieRequest {
+public class MovieSearchResponse {
 
-    public int page;
+    public int totalResults;
     @JsonProperty("results")
     public List<MovieSearchModel> results;
-    @JsonProperty("total_pages")
-    public int totalPages;
-    @JsonProperty("total_results")
-    public int totalResults;
-
 }

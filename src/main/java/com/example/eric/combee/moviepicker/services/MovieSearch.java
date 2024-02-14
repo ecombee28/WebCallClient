@@ -1,7 +1,9 @@
 package com.example.eric.combee.moviepicker.services;
 
 import com.example.eric.combee.moviepicker.model.request.MovieSearchRequest;
-import com.example.eric.combee.moviepicker.model.response.MovieDetailModel;
+import com.example.eric.combee.moviepicker.model.response.MovieRequest;
+import com.example.eric.combee.moviepicker.model.response.MovieSearchModel;
+import com.example.eric.combee.moviepicker.model.response.MovieSearchResponse;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,8 +21,8 @@ import reactor.util.retry.Retry;
 
 import javax.management.ServiceNotFoundException;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MovieSearch {
@@ -45,11 +47,10 @@ public class MovieSearch {
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
 
-    public List<MovieDetailModel> searchForMovie(MovieSearchRequest request) {
+    public MovieSearchResponse searchForMovie(MovieSearchRequest request) {
         String movie = request.getMovieName();
-        String searchYear = request.getReleaseDate() != null ? request.getReleaseDate() : "";
+        String searchYear = request.getReleaseYear();
 
-        //--url 'https://api.themoviedb.org/3/search/movie?query=batman&include_adult=false&language=en-US&page=1&year=1989' \
 
         return webClient.get().
                 uri(uriBuilder -> uriBuilder.path("search/movie")
@@ -63,7 +64,7 @@ public class MovieSearch {
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ServiceNotFoundException(movie + " not found")))
                 .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Internal error")))
-                .bodyToMono(MovieDetailModel.class)
+                .bodyToMono(MovieRequest.class)
                 .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(retryWaitTime))
                         .filter(throwable -> {
                             if (throwable instanceof WebClientResponseException) {
@@ -74,7 +75,7 @@ public class MovieSearch {
                         }))
                 .map(response -> {
                     try {
-                        return prepareResponse(response, request);
+                        return prepareResponse(response);
                     } catch (JsonProcessingException e) {
                         throw new RuntimeException(e);
                     }
@@ -89,11 +90,28 @@ public class MovieSearch {
 
     }
 
-    private List<MovieDetailModel> prepareResponse(MovieDetailModel body, MovieSearchRequest request) throws JsonProcessingException {
-        List<MovieDetailModel> searchResults = new ArrayList<>();
+    private MovieSearchResponse prepareResponse(MovieRequest body) throws JsonProcessingException {
+        MovieSearchResponse movieSearchResponse = new MovieSearchResponse();
+        List<MovieSearchModel> searchResults = body.getResults()
+                .stream()
+                .filter(vote -> vote.getVoteCount() > 2000)
+                .map(results -> prepareResponse(results))
+                .collect(Collectors.toList());
 
-        System.out.println(objectMapper.writeValueAsString(body));
+        movieSearchResponse.setResults(searchResults);
+        movieSearchResponse.setTotalResults(searchResults.size());
 
-        return searchResults;
+
+        return movieSearchResponse;
+    }
+
+
+    private MovieSearchModel prepareResponse(MovieSearchModel response) {
+
+        response.setBackgroundPath(backgroundPath + response.getBackgroundPath());
+        response.setPosterPath(posterPath + response.getPosterPath());
+
+        return response;
+
     }
 }
