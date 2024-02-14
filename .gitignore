@@ -1,8 +1,8 @@
 /.classpath
 /.project
 /bin/
-.gradle/
-.build/
+*.gradle
+*.build
 test-output/
 src/main/resources/application.properties
 
@@ -29,3 +29,5 @@ src/main/resources/application.properties
 /.nb-gradle/
 build/
 src/main/resources/application.properties
+*.lock
+.gradle/8.5/dependencies-accessors/dependencies-accessors.lock
