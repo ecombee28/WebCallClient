@@ -86,7 +86,7 @@ public class ActorDetails {
         actorResponse.setImage(profilePicture);
         actorResponse.setKnownForDepartment(response.getResults().get(0).getKnownForDepartment());
         actorResponse.setGender(gender);
-      
+
         List<MovieRoles> movieList = response.getResults().get(0).movieRolesList.stream().map(movie -> {
                     MovieRoles movieRoles = new MovieRoles();
                     movieRoles.setPosterPath(posterPath + movie.getPosterPath());
