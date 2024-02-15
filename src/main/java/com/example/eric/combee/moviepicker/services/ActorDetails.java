@@ -27,7 +27,6 @@ public class ActorDetails extends ResponseException {
     @Autowired
     @Qualifier("webClientBase")
     private WebClient webClient;
-
     @Autowired
     private LoggingUtility loggingUtility;
     @Value("${web.retry.times}")
@@ -36,7 +35,6 @@ public class ActorDetails extends ResponseException {
     private int retryWaitTime;
     @Value("${web.client.key}")
     private String key;
-
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
     @Value("${tmdb.path.actor}")
@@ -78,26 +76,33 @@ public class ActorDetails extends ResponseException {
 
     private ActorResponse prepareResponse(ActorSearchWebResponse response) {
         ActorResponse actorResponse = new ActorResponse();
-        String gender = response.getResults().get(0).getGender() == 1 ? "Female" : "Male";
-        String profilePicture = posterPath + response.getResults().get(0).getImage();
 
-        actorResponse.setOriginalName(response.getResults().get(0).getOriginalName());
-        actorResponse.setId(response.getResults().get(0).getId());
-        actorResponse.setName(response.getResults().get(0).getName());
-        actorResponse.setImage(profilePicture);
-        actorResponse.setKnownForDepartment(response.getResults().get(0).getKnownForDepartment());
-        actorResponse.setGender(gender);
+        try {
+            String gender = response.getResults().get(0).getGender() == 1 ? "Female" : "Male";
+            String profilePicture = posterPath + response.getResults().get(0).getImage();
 
-        List<MovieRoles> movieList = response.getResults().get(0).movieRolesList.stream().map(movie -> {
-                    MovieRoles movieRoles = new MovieRoles();
-                    movieRoles.setPosterPath(posterPath + movie.getPosterPath());
-                    movieRoles.setMediaType(movie.getMediaType());
-                    movieRoles.setTitle(movie.getTitle());
-                    return movieRoles;
-                })
-                .collect(Collectors.toList());
+            actorResponse.setOriginalName(response.getResults().get(0).getOriginalName());
+            actorResponse.setId(response.getResults().get(0).getId());
+            actorResponse.setName(response.getResults().get(0).getName());
+            actorResponse.setImage(profilePicture);
+            actorResponse.setKnownForDepartment(response.getResults().get(0).getKnownForDepartment());
+            actorResponse.setGender(gender);
 
-        actorResponse.setMovieRoles(movieList);
+            List<MovieRoles> movieList = response.getResults().get(0).movieRolesList.stream().map(movie -> {
+                        MovieRoles movieRoles = new MovieRoles();
+                        movieRoles.setPosterPath(posterPath + movie.getPosterPath());
+                        movieRoles.setMediaType(movie.getMediaType());
+                        movieRoles.setTitle(movie.getTitle());
+                        return movieRoles;
+                    })
+                    .collect(Collectors.toList());
+
+            actorResponse.setMovieRoles(movieList);
+
+            loggingUtility.logInfo(actorResponse, "Successfully mapped new actor request");
+        } catch (Exception ex) {
+
+        }
 
         return actorResponse;
 

@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.IOException;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,7 +62,7 @@ class MovieControllerUnitTests {
 
         mockMvc.perform(MockMvcRequestBuilders.get(MOVIE_DETAIL_URL).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
-        verify(loggingUtility).logInfo(eq(null), eq("Entered into the controller with movieId: 9489"));
+        verify(loggingUtility).logInfo(any(), eq("Entered into the controller with movieId: 9489"));
 
 
     }
@@ -76,7 +77,7 @@ class MovieControllerUnitTests {
                         .content(objectMapper.writeValueAsString(actorRequest)))
                 .andExpect(status().isOk());
 
-        verify(loggingUtility).logInfo(eq(null), eq("Entered into the controller for actor: " + name));
+        verify(loggingUtility).logInfo(any(), eq("Entered into the controller for actor: " + name));
 
     }
 
@@ -89,7 +90,7 @@ class MovieControllerUnitTests {
                         .content(objectMapper.writeValueAsString(movieSearchRequest)))
                 .andExpect(status().isOk());
 
-        verify(loggingUtility).logInfo(eq(null), eq("Entered into the controller for movie: " + movieSearchRequest.getMovieName()));
-        
+        verify(loggingUtility).logInfo(any(), eq("Entered into the controller for movie: " + movieSearchRequest.getMovieName()));
+
     }
 }

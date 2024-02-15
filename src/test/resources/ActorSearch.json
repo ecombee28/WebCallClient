@@ -1,7 +1,6 @@
 {
-    "firstName":"Tom",
-    "lastName":"Hanks",
-    "knownDepartment":"Acting",
-    "gender":"male"
-
+  "firstName": "Tom",
+  "lastName": "Hanks",
+  "knownDepartment": "Acting",
+  "gender": "male"
 }

@@ -1,6 +1,5 @@
 package com.example.eric.combee.moviepicker.utility;
 
-import com.example.eric.combee.moviepicker.model.response.MovieDetailModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ public class LoggingUtility {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public void logInfo(MovieDetailModel body, String description) throws JsonProcessingException {
+    public void logInfo(Object body, String description) throws JsonProcessingException {
 
         if (body != null) {
             String payload = objectMapper.writeValueAsString(body);
@@ -25,7 +24,7 @@ public class LoggingUtility {
     }
 
 
-    public void logError(MovieDetailModel body, String description, Exception ex) throws JsonProcessingException {
+    public void logError(Object body, String description, Exception ex) throws JsonProcessingException {
 
         if (body != null) {
             String payload = objectMapper.writeValueAsString(body);

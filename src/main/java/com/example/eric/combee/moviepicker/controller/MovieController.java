@@ -37,13 +37,13 @@ public class MovieController implements MovieApi {
     @Override
     public ResponseEntity<?> getActorDetails(ActorRequest request) throws JsonProcessingException {
         String name = request.getFirstName() + " " + request.getLastName();
-        loggingUtility.logInfo(null, "Entered into the controller for actor: " + name);
+        loggingUtility.logInfo(request, "Entered into the controller for actor: " + name);
         return new ResponseEntity<>(actorDetails.gatherActorDetails(request), HttpStatus.OK);
     }
 
     @Override
     public ResponseEntity<?> searchForMovie(MovieSearchRequest body) throws JsonProcessingException {
-        loggingUtility.logInfo(null, "Entered into the controller for movie: " + body.getMovieName());
+        loggingUtility.logInfo(body, "Entered into the controller for movie: " + body.getMovieName());
         return new ResponseEntity<>(movieSearch.searchForMovie(body), HttpStatus.OK);
     }
 

@@ -28,7 +28,6 @@ public class MovieSearch extends ResponseException {
     @Autowired
     @Qualifier("webClientBase")
     private WebClient webClient;
-
     @Autowired
     private LoggingUtility loggingUtility;
     @Value("${web.retry.times}")
@@ -43,7 +42,6 @@ public class MovieSearch extends ResponseException {
     private String posterPath;
     @Value("${tmdb.path.movie.search}")
     private String url;
-
 
     public MovieSearchResponse searchForMovie(MovieSearchRequest request) {
         String movie = request.getMovieName();

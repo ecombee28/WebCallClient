@@ -24,7 +24,6 @@ public class MovieDetails extends ResponseException {
     @Autowired
     @Qualifier("webClientBase")
     private WebClient webClient;
-
     @Autowired
     private LoggingUtility loggingUtility;
     @Value("${web.retry.times}")
@@ -33,14 +32,12 @@ public class MovieDetails extends ResponseException {
     private int retryWaitTime;
     @Value("${web.client.key}")
     private String key;
-
     @Value("${tmdb.background.path.url}")
     private String backgroundPath;
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
     @Value("${tmdb.path.movie.details}")
     private String url;
-
 
     public MovieDetailModel gatherMovieDetails(String movieId) {
 
@@ -81,7 +78,6 @@ public class MovieDetails extends ResponseException {
 
 
     private MovieDetailModel prepareResponse(MovieDetailModel response) throws JsonProcessingException {
-
         response.setBackgroundPath(backgroundPath + response.getBackgroundPath());
         response.setPosterPath(posterPath + response.getPosterPath());
         response.setBudget(setBudget(Double.parseDouble(response.getBudget())));
