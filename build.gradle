@@ -1,11 +1,8 @@
 plugins {
-    id 'com.google.cloud.tools.jib' version '3.2.0'
-    id "org.springframework.boot" version "3.0.7"
-    id "io.spring.dependency-management" version "1.1.0"
     id 'java'
+    id 'org.springframework.boot' version '3.2.2'
+    id 'io.spring.dependency-management' version '1.1.4'
     id 'jacoco'
-    id 'maven-publish'
-    id 'idea'
 }
 
 group = 'com.example.eric.combee'
@@ -35,17 +32,19 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.projectlombok:lombok'
+
     testImplementation "com.squareup.okhttp3:mockwebserver"
     testImplementation "com.squareup.okhttp3:okhttp"
     testImplementation "org.junit.jupiter:junit-jupiter"
-    testImplementation "org.mockito:mockito-core:4.4.0"
+    testImplementation "org.mockito:mockito-core:5.2.0"
     testImplementation 'org.springdoc:springdoc-openapi-webmvc-core:1.6.15'
     testImplementation "org.springframework.boot:spring-boot-starter-test"
     testImplementation "org.springframework.kafka:spring-kafka-test"
-    testImplementation(platform("org.junit:junit-bom:5.8.2"))
+
 }
 
-test {
+
+tasks.named('test') {
     useJUnitPlatform()
 }
 
@@ -59,9 +58,7 @@ task unitTests(type: Test) {
     finalizedBy jacocoTestReport
 }
 
-//the test report used by git actions
-//navigate to build/jacoco/reports/ for an html
-// that is easy to read on local
+
 jacocoTestReport {
     dependsOn(unitTests)
     reports {
