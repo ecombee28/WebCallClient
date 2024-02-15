@@ -38,12 +38,14 @@ public class MovieDetails extends ResponseException {
     private String backgroundPath;
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
+    @Value("${tmdb.path.movie.details}")
+    private String url;
 
 
     public MovieDetailModel gatherMovieDetails(String movieId) {
 
         return webClient.get().
-                uri(uriBuilder -> uriBuilder.path("movie/{id}")
+                uri(uriBuilder -> uriBuilder.path(url)
                         .queryParam("language", "en-US")
                         .build(movieId))
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)

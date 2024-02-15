@@ -41,6 +41,9 @@ public class MovieSearch extends ResponseException {
     private String backgroundPath;
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
+    @Value("${tmdb.path.movie.search}")
+    private String url;
+
 
     public MovieSearchResponse searchForMovie(MovieSearchRequest request) {
         String movie = request.getMovieName();
@@ -48,7 +51,7 @@ public class MovieSearch extends ResponseException {
 
 
         return webClient.get().
-                uri(uriBuilder -> uriBuilder.path("search/movie")
+                uri(uriBuilder -> uriBuilder.path(url)
                         .queryParam("query", movie)
                         .queryParam("language", "en-US")
                         .queryParam("include_adult", "false")

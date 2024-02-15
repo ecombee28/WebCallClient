@@ -39,6 +39,8 @@ public class ActorDetails extends ResponseException {
 
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
+    @Value("${tmdb.path.actor}")
+    private String url;
 
     public ActorResponse gatherActorDetails(ActorRequest request) {
 
@@ -46,7 +48,7 @@ public class ActorDetails extends ResponseException {
 
         return webClient.get().
                 uri(uriBuilder -> uriBuilder
-                        .path("search/person")
+                        .path(url)
                         .queryParam("query", name)
                         .build())
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
