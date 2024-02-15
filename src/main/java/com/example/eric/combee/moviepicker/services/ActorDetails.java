@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ActorDetails {
+public class ActorDetails extends ResponseException {
 
     @Autowired
     @Qualifier("webClientBase")
@@ -52,9 +52,8 @@ public class ActorDetails {
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
                 .retrieve()
-                .onStatus(
-                        HttpStatusCode::is4xxClientError,
-                        response -> Mono.error(new RuntimeException("client error: " + response.statusCode().value() + " Not Found")))
+                .onStatus(HttpStatusCode::is4xxClientError, this::createResponseException)
+                .onStatus(HttpStatusCode::is5xxServerError, this::createResponseException)
                 .bodyToMono(ActorSearchWebResponse.class)
                 .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(retryWaitTime))
                         .filter(throwable -> {

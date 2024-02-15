@@ -3,7 +3,6 @@ package com.example.eric.combee.moviepicker.services;
 import com.example.eric.combee.moviepicker.model.response.MovieDetailModel;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.xml.ws.WebServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,12 +15,11 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
-import javax.management.ServiceNotFoundException;
 import java.text.NumberFormat;
 import java.time.Duration;
 
 @Service
-public class MovieDetails {
+public class MovieDetails extends ResponseException {
 
     @Autowired
     @Qualifier("webClientBase")
@@ -46,13 +44,13 @@ public class MovieDetails {
 
         return webClient.get().
                 uri(uriBuilder -> uriBuilder.path("movie/{id}")
-                        .queryParam("language","en-US")
+                        .queryParam("language", "en-US")
                         .build(movieId))
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError,response ->Mono.error(new ServiceNotFoundException("MovieId "+movieId+" not found")))
-                .onStatus(HttpStatusCode::is5xxServerError,response ->Mono.error(new RuntimeException("Internal error")))
+                .onStatus(HttpStatusCode::is4xxClientError, this::createResponseException)
+                .onStatus(HttpStatusCode::is5xxServerError, this::createResponseException)
                 .bodyToMono(MovieDetailModel.class)
                 .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(retryWaitTime))
                         .filter(throwable -> {
@@ -86,7 +84,7 @@ public class MovieDetails {
         response.setPosterPath(posterPath + response.getPosterPath());
         response.setBudget(setBudget(Double.parseDouble(response.getBudget())));
 
-        if(response.getCollectionsList()!=null) {
+        if (response.getCollectionsList() != null) {
             response.getCollectionsList().setPosterPath(posterPath + response.getCollectionsList().getPosterPath());
             response.getCollectionsList().setBackdropPath(backgroundPath + response.getCollectionsList().getBackdropPath());
         }

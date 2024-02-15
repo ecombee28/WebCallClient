@@ -6,7 +6,6 @@ import com.example.eric.combee.moviepicker.model.response.MovieSearchModel;
 import com.example.eric.combee.moviepicker.model.response.MovieSearchResponse;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,13 +18,12 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
-import javax.management.ServiceNotFoundException;
 import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class MovieSearch {
+public class MovieSearch extends ResponseException {
 
     @Autowired
     @Qualifier("webClientBase")
@@ -39,9 +37,6 @@ public class MovieSearch {
     private int retryWaitTime;
     @Value("${web.client.key}")
     private String key;
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Value("${tmdb.background.path.url}")
     private String backgroundPath;
     @Value("${tmdb.poster.path.url}")
@@ -62,8 +57,8 @@ public class MovieSearch {
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
                 .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, response -> Mono.error(new ServiceNotFoundException(movie + " not found")))
-                .onStatus(HttpStatusCode::is5xxServerError, response -> Mono.error(new RuntimeException("Internal error")))
+                .onStatus(HttpStatusCode::is4xxClientError, this::createResponseException)
+                .onStatus(HttpStatusCode::is5xxServerError, this::createResponseException)
                 .bodyToMono(MovieRequest.class)
                 .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(retryWaitTime))
                         .filter(throwable -> {
@@ -114,4 +109,6 @@ public class MovieSearch {
         return response;
 
     }
+
+
 }
