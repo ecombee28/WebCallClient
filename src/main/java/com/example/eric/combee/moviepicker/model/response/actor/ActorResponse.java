@@ -1,4 +1,4 @@
-package com.example.eric.combee.moviepicker.model.response;
+package com.example.eric.combee.moviepicker.model.response.actor;
 
 import com.example.eric.combee.moviepicker.model.MovieRoles;
 import lombok.AllArgsConstructor;

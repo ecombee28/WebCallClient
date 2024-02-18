@@ -1,8 +1,8 @@
 package com.example.eric.combee.moviepicker.services;
 
 import com.example.eric.combee.moviepicker.model.request.ActorRequest;
-import com.example.eric.combee.moviepicker.model.response.ActorResponse;
-import com.example.eric.combee.moviepicker.model.response.ActorSearchWebResponse;
+import com.example.eric.combee.moviepicker.model.response.actor.ActorResponse;
+import com.example.eric.combee.moviepicker.model.response.actor.ActorSearchWebResponse;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

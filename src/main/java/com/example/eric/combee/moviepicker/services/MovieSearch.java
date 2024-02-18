@@ -1,9 +1,9 @@
 package com.example.eric.combee.moviepicker.services;
 
 import com.example.eric.combee.moviepicker.model.request.MovieSearchRequest;
-import com.example.eric.combee.moviepicker.model.response.MovieRequest;
-import com.example.eric.combee.moviepicker.model.response.MovieSearchModel;
-import com.example.eric.combee.moviepicker.model.response.MovieSearchResponse;
+import com.example.eric.combee.moviepicker.model.response.moviesearch.MovieRequest;
+import com.example.eric.combee.moviepicker.model.response.moviesearch.MovieSearchModel;
+import com.example.eric.combee.moviepicker.model.response.moviesearch.MovieSearchResponse;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;

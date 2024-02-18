@@ -1,4 +1,4 @@
-package com.example.eric.combee.moviepicker.model.response;
+package com.example.eric.combee.moviepicker.model.response.moviesearch;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

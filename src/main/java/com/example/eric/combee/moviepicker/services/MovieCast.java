@@ -1,8 +1,8 @@
 package com.example.eric.combee.moviepicker.services;
 
-import com.example.eric.combee.moviepicker.model.response.moviesearch.MovieDetailModel;
+import com.example.eric.combee.moviepicker.model.response.cast.CastResponse;
+import com.example.eric.combee.moviepicker.model.response.cast.MovieCastResponse;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,13 +15,13 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
-import java.text.NumberFormat;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 @Service
-public class MovieDetails extends ResponseException {
-
+public class MovieCast extends ResponseException {
     @Autowired
     @Qualifier("webClientBase")
     private WebClient webClient;
@@ -33,25 +33,24 @@ public class MovieDetails extends ResponseException {
     private int retryWaitTime;
     @Value("${web.client.key}")
     private String key;
-    @Value("${tmdb.background.path.url}")
-    private String backgroundPath;
     @Value("${tmdb.poster.path.url}")
     private String posterPath;
-    @Value("${tmdb.path.movie.details}")
+    @Value("${tmdb.path.movie.cast}")
     private String url;
 
-    public MovieDetailModel gatherMovieDetails(String movieId) {
+    public List<CastResponse> getMovieCast(String movieId) {
 
-        return webClient.get().
-                uri(uriBuilder -> uriBuilder.path(url)
-                        .queryParam("language", "en-US")
-                        .build(movieId))
+        return webClient.get().uri(
+                        uriBuilder -> uriBuilder
+                                .path(url)
+                                .queryParam("language", "en-US")
+                                .build(movieId))
                 .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
                 .header(HttpHeaders.AUTHORIZATION, key)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError, this::createResponseException)
                 .onStatus(HttpStatusCode::is5xxServerError, this::createResponseException)
-                .bodyToMono(MovieDetailModel.class)
+                .bodyToMono(MovieCastResponse.class)
                 .retryWhen(Retry.fixedDelay(maxAttempts, Duration.ofMillis(retryWaitTime))
                         .filter(throwable -> {
                             if (throwable instanceof WebClientResponseException) {
@@ -60,52 +59,49 @@ public class MovieDetails extends ResponseException {
                                 return false;
                             }
                         }))
-                .map(response -> {
-
-                    try {
-                        return prepareResponse(response);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                })
+                .map(this::prepareCastResponse)
                 .onErrorResume(error -> {
-                    loggingUtility.logWebClientError("There was an error calling TMDB for movie details", error);
-                    System.out.println(error.getCause());
+                    loggingUtility.logWebClientError("There was an error calling TMDB for actor details", error);
                     return Mono.error(error);
                 })
                 .block();
 
     }
 
+    private List<CastResponse> prepareCastResponse(MovieCastResponse response) {
 
-    private MovieDetailModel prepareResponse(MovieDetailModel response) throws JsonProcessingException {
-        response.setBackgroundPath(setValue(response.getBackgroundPath(), b -> backgroundPath + b));
-        response.setPosterPath(setValue(response.getPosterPath(), p -> posterPath + p));
-        response.setBudget(setBudget(Double.parseDouble(response.getBudget())));
+        List<CastResponse> castList = new ArrayList<>();
 
-        if (response.getCollectionsList() != null) {
-            response.getCollectionsList().setPosterPath(setValue(response.getCollectionsList().getPosterPath(), p -> posterPath + p));
-            response.getCollectionsList().setBackdropPath(setValue(response.getCollectionsList().getBackdropPath(), b -> backgroundPath + b));
+        try {
+            for (int i = 0; i < 5; i++) {
+                CastResponse castResponse = new CastResponse();
+                castResponse.setId(response.getCastList().get(i).getId());
+                castResponse.setName(response.getCastList().get(i).getName());
+                castResponse.setCharacterName(response.getCastList().get(i).getCharacter());
+                castResponse.setPopularity(response.getCastList().get(i).getPopularity());
+                castResponse.setGender(setGender(response.getCastList().get(i).getGender()));
+                castResponse.setProfilePath(setupValue(response.getCastList().get(i).getProfilePath(), pic -> posterPath + pic));
+                castResponse.setKnownForDepartment(response.getCastList().get(i).getKnownForDepartment());
+                castList.add(castResponse);
+            }
+        } catch (Exception ex) {
+
         }
 
-        return response;
+        return castList;
+    }
 
+    private String setGender(int genderNumber) {
+        return genderNumber == 1 ? "Female" : "Male";
 
     }
 
-    private String setBudget(double movieBudget) {
-        NumberFormat defaultFormat = NumberFormat.getCurrencyInstance();
-        return defaultFormat.format(movieBudget);
-    }
-
-    private <T> T setValue(T value, Function<T, T> setterFunction) {
+    private <T> T setupValue(T value, Function<T, T> setterFunction) {
         if (setterFunction != null && value != null) {
             return setterFunction.apply(value);
         }
 
         return value;
     }
-
 
 }

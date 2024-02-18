@@ -2,8 +2,8 @@ package com.example.eric.combee.moviepicker.services;
 
 import com.example.eric.combee.moviepicker.model.MovieRoles;
 import com.example.eric.combee.moviepicker.model.request.ActorRequest;
-import com.example.eric.combee.moviepicker.model.response.ActorResponse;
-import com.example.eric.combee.moviepicker.model.response.ActorSearchWebResponse;
+import com.example.eric.combee.moviepicker.model.response.actor.ActorResponse;
+import com.example.eric.combee.moviepicker.model.response.actor.ActorSearchWebResponse;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -2,7 +2,9 @@ package com.example.eric.combee.moviepicker.controller;
 
 import com.example.eric.combee.moviepicker.model.request.ActorRequest;
 import com.example.eric.combee.moviepicker.model.request.MovieSearchRequest;
+import com.example.eric.combee.moviepicker.model.response.moviesearch.MovieDetailModel;
 import com.example.eric.combee.moviepicker.services.ActorDetails;
+import com.example.eric.combee.moviepicker.services.MovieCast;
 import com.example.eric.combee.moviepicker.services.MovieDetails;
 import com.example.eric.combee.moviepicker.services.MovieSearch;
 import com.example.eric.combee.moviepicker.utility.LoggingUtility;
@@ -26,12 +28,18 @@ public class MovieController implements MovieApi {
     @Autowired
     private MovieSearch movieSearch;
 
+    @Autowired
+    private MovieCast movieCast;
+
 
     @Override
     public ResponseEntity<?> getMovieDetails(String movieId) throws JsonProcessingException {
         loggingUtility.logInfo(null, "Entered into the controller with movieId: " + movieId);
 
-        return new ResponseEntity<>(movieDetails.gatherMovieDetails(movieId), HttpStatus.OK);
+        MovieDetailModel movieDetailModel = movieDetails.gatherMovieDetails(movieId);
+        movieDetailModel.setCastList(movieCast.getMovieCast(movieId));
+
+        return new ResponseEntity<>(movieDetailModel, HttpStatus.OK);
     }
 
     @Override

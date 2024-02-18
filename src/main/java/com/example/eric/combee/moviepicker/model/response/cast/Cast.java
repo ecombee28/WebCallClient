@@ -1,27 +1,25 @@
-package com.example.eric.combee.moviepicker.model.response;
+package com.example.eric.combee.moviepicker.model.response.cast;
 
-import com.example.eric.combee.moviepicker.model.MovieRoles;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ActorDetailModel {
+public class Cast {
 
     public int gender;
-    public String id;
+    public int id;
     @JsonProperty("known_for_department")
     public String knownForDepartment;
     public String name;
     @JsonProperty("original_name")
     public String originalName;
+    public double popularity;
     @JsonProperty("profile_path")
-    public String image;
-    @JsonProperty("known_for")
-    public List<MovieRoles> movieRolesList;
+    public String profilePath;
+    public String character;
+
 }
