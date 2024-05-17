@@ -12,9 +12,8 @@ on:
         required: true
         description: Your last name (ex. Combee)
       age:
-        type: string
+        type: int
         description: Age of the user
-        default: 0
         required: false
       description:
         description: Tell us about you
@@ -26,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by ${{ inputs.firstname }} ${{ inputs.lastname }}."
-      - run: if ${{ inputs.age }} > 0 then echo "🐧 The user is ${{ inputs.age }} years old"
+      - run: if ${{ inputs.age }} != '' then echo "🐧 The user is ${{ inputs.age }} years old"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v4
