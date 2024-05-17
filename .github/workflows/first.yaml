@@ -26,9 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: echo "🎉 The job was automatically triggered by ${{ inputs.firstname }} ${{ inputs.lastname }}."
-      - run: if ${{ inputs.age }} != '' then
-          echo "🐧 The user is ${{ inputs.age }} years old"
-
       - name: ✏️Set Application Name and Version
         if: ${{ inputs.age }} > 0
         run: echo "🐧 The user is ${{ inputs.age }} years old"
